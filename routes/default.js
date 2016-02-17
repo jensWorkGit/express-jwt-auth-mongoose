@@ -18,7 +18,7 @@ var authenticate = function (req, res, next) {
     var username = req.body.username,
         password = req.body.password;
 
-    if (_.isEmpty(username) || _.isEmpty(password)) {
+    if(_.isEmpty(username) || _.isEmpty(password)) {
         return next(new UnauthorizedAccessError("401", {
             message: 'Invalid username or password'
         }));
@@ -30,14 +30,14 @@ var authenticate = function (req, res, next) {
             username: username
         }, function (err, user) {
 
-            if (err || !user) {
+            if(err || !user) {
                 return next(new UnauthorizedAccessError("401", {
                     message: 'Invalid username or password'
                 }));
             }
 
             user.comparePassword(password, function (err, isMatch) {
-                if (isMatch && !err) {
+                if(isMatch && !err) {
                     debug("User authenticated, generating token");
                     utils.create(user, req, res, next);
                 } else {
@@ -62,7 +62,7 @@ module.exports = function () {
     });
 
     router.route("/logout").get(function (req, res, next) {
-        if (utils.expire(req.headers)) {
+        if(utils.expire(req.headers)) {
             delete req.user;
             return res.status(200).json({
                 "message": "User has been successfully logged out"

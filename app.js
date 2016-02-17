@@ -52,8 +52,8 @@ var jwtCheck = jwt({
 });
 jwtCheck.unless = unless;
 
-app.use(jwtCheck.unless({path: '/api/login' }));
-app.use(utils.middleware().unless({path: '/api/login' }));
+app.use(jwtCheck.unless({path: '/api/login'}));
+app.use(utils.middleware().unless({path: '/api/login'}));
 
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
 
@@ -67,7 +67,7 @@ app.use(function (err, req, res, next) {
 
     var errorType = typeof err,
         code = 500,
-        msg = { message: "Internal Server Error" };
+        msg = {message: "Internal Server Error"};
 
     switch (err.name) {
         case "UnauthorizedError":

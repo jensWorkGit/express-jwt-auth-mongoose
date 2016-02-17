@@ -27,10 +27,10 @@ client.on('connect', function () {
  * @returns {*}
  */
 module.exports.fetch = function (headers) {
-    if (headers && headers.authorization) {
+    if(headers && headers.authorization) {
         var authorization = headers.authorization;
         var part = authorization.split(' ');
-        if (part.length === 2) {
+        if(part.length === 2) {
             var token = part[1];
             return part[1];
         } else {
@@ -55,7 +55,7 @@ module.exports.create = function (user, req, res, next) {
 
     debug("Create token");
 
-    if (_.isEmpty(user)) {
+    if(_.isEmpty(user)) {
         return next(new Error('User data cannot be empty.'));
     }
 
@@ -65,7 +65,7 @@ module.exports.create = function (user, req, res, next) {
         access: user.access,
         name: user.name,
         email: user.email,
-        token: jsonwebtoken.sign({ _id: user._id }, config.secret, {
+        token: jsonwebtoken.sign({_id: user._id}, config.secret, {
             expiresInMinutes: TOKEN_EXPIRATION
         })
     };
@@ -78,16 +78,16 @@ module.exports.create = function (user, req, res, next) {
     debug("Token generated for user: %s, token: %s", data.username, data.token);
 
     client.set(data.token, JSON.stringify(data), function (err, reply) {
-        if (err) {
+        if(err) {
             return next(new Error(err));
         }
 
-        if (reply) {
+        if(reply) {
             client.expire(data.token, TOKEN_EXPIRATION_SEC, function (err, reply) {
-                if (err) {
+                if(err) {
                     return next(new Error("Can not set the expire value for the token key"));
                 }
-                if (reply) {
+                if(reply) {
                     req.user = data;
                     next(); // we have succeeded
                 } else {
@@ -115,20 +115,20 @@ module.exports.retrieve = function (id, done) {
 
     debug("Calling retrieve for token: %s", id);
 
-    if (_.isNull(id)) {
+    if(_.isNull(id)) {
         return done(new Error("token_invalid"), {
             "message": "Invalid token"
         });
     }
 
     client.get(id, function (err, reply) {
-        if (err) {
+        if(err) {
             return done(err, {
                 "message": err
             });
         }
 
-        if (_.isNull(reply)) {
+        if(_.isNull(reply)) {
             return done(new Error("token_invalid"), {
                 "message": "Token doesn't exists, are you sure it hasn't expired or been revoked?"
             });
@@ -136,7 +136,7 @@ module.exports.retrieve = function (id, done) {
             var data = JSON.parse(reply);
             debug("User data fetched from redis store for user: %s", data.username);
 
-            if (_.isEqual(data.token, id)) {
+            if(_.isEqual(data.token, id)) {
                 return done(null, data);
             } else {
                 return done(new Error("token_doesnt_exist"), {
@@ -165,14 +165,14 @@ module.exports.verify = function (req, res, next) {
 
     jsonwebtoken.verify(token, config.secret, function (err, decode) {
 
-        if (err) {
+        if(err) {
             req.user = undefined;
             return next(new UnauthorizedAccessError("invalid_token"));
         }
 
         exports.retrieve(token, function (err, data) {
 
-            if (err) {
+            if(err) {
                 req.user = undefined;
                 return next(new UnauthorizedAccessError("invalid_token", data));
             }
@@ -197,7 +197,7 @@ module.exports.expire = function (headers) {
 
     debug("Expiring token: %s", token);
 
-    if (token !== null) {
+    if(token !== null) {
         client.expire(token, 0);
     }
 
@@ -220,7 +220,7 @@ module.exports.middleware = function () {
 
         exports.retrieve(token, function (err, data) {
 
-            if (err) {
+            if(err) {
                 req.user = undefined;
                 return next(new UnauthorizedAccessError("invalid_token", data));
             } else {

@@ -8,7 +8,7 @@ var args = process.argv.slice(2);
 var username = args[0];
 var password = args[1];
 
-if (args.length < 2) {
+if(args.length < 2) {
     console.log("usage: node %s %s %s", path.basename(process.argv[1]), "user", "password");
     process.exit();
 }
@@ -34,7 +34,7 @@ mongoose.connection.once('open', function callback() {
     user.password = password;
 
     user.save(function (err) {
-        if (err) {
+        if(err) {
             console.log(err);
         } else {
             console.log(user);
